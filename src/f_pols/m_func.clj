@@ -7,7 +7,7 @@
                         (fn [s v]
                           (vector (-> s name symbol) v)) 
                         v-args args))
-             ~body))))
+             ~@body))))
 
 (definterface IFuncaoMalina
   (body [nb]))
@@ -31,4 +31,4 @@
   (FuncaoMaligna. args body))
 
 (defmacro defun [name args & body]
-  `(def ~name (FuncaoMaligna. '~(map #(keyword %) args) '~@body)))
+  `(def ~name (funcao-maligna '~(map #(keyword %) args) '~body)))
