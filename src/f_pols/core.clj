@@ -6,11 +6,10 @@
 
 (defn polinomio [c-es]
   (funcao-maligna
-   '(:x)
-   (conj
-    (reduce (fn [acc [c e]] (->> (monomio c e) (conj acc)))
-            '() c-es)
-    '+)))
+   [:x]
+   (list (conj
+          (reduce (fn [acc [c e]] (->> (monomio c e) (conj acc)))
+                  '() c-es) '+))))
 
 (defn get-n [coll]
   (loop [coll coll]
@@ -23,6 +22,7 @@
 
 (defn derivar [pol]
   (->>
+   pol (#(nth % 0))
    (reduce (fn [acc x]
              (if (list? x)
                (->>
@@ -30,7 +30,7 @@
                     (update-l 1 #(* % (get-n (nth x 2))))
                     (update-l 2 #(update-l % 2 (fn [y] (dec y)))))
                 (conj acc))
-               (conj acc x))) '() pol)
-   reverse
+               (conj acc x))) '())   
+   reverse list
    (.body pol)))
 

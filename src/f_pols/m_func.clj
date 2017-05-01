@@ -1,6 +1,6 @@
 (ns f-pols.m-func)
 
-(defn invoke-fm [body v-args args]
+(defn invoke-fm [body v-args & args]
   (when (= (count v-args) (count args))
     (eval `(let ~(into []
                        (mapcat
@@ -12,23 +12,23 @@
 (definterface IFuncaoMalina
   (body [nb]))
 
-(deftype FuncaoMaligna
-    [v-args body]
-  clojure.lang.Seqable
-  (seq [_] body)
-  clojure.lang.IFn
-  (invoke [_ args] (invoke-fm body v-args args))
-  IFuncaoMalina
-  (body [_ nb] (FuncaoMaligna. v-args nb))
-  Object
-  (toString [_] (.toString body)))
-
-(defmethod print-method FuncaoMaligna [v ^java.io.Writer w]
+(defmethod print-method IFuncaoMalina [v ^java.io.Writer w]
   (.write w (str v)))
 
 (defn funcao-maligna
-  [args body]
-  (FuncaoMaligna. args body))
+  [v-args body]
+  (letfn [(argfy [args] (map #(-> % name symbol) args))]
+    (let [args (argfy v-args)]
+      (eval `(reify
+               clojure.lang.IPersistentList
+               clojure.lang.Seqable
+               (seq [_] '~body)
+               clojure.lang.IFn
+               (invoke [_ ~@args] (invoke-fm '~body ~v-args ~@args))
+               f_pols.m_func.IFuncaoMalina
+               (body [_ ~(quote nb)] (funcao-maligna ~v-args ~(quote nb)))
+               Object
+               (toString [_] (.toString '~body)))))))
 
 (defmacro defun [name args & body]
-  `(def ~name (funcao-maligna '~(map #(keyword %) args) '~body)))
+  `(def ~name (funcao-maligna ~(vec (map keyword args)) '~body)))
