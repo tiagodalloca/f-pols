@@ -21,16 +21,16 @@
   (concat (take n l) (list (f (nth l n))) (nthnext l (inc n))))
 
 (defn derivar [pol]
-  (->>
-   pol (#(nth % 0))
-   (reduce (fn [acc x]
-             (if (list? x)
-               (->>
-                (-> x
-                    (update-l 1 #(* % (get-n (nth x 2))))
-                    (update-l 2 #(update-l % 2 (fn [y] (dec y)))))
-                (conj acc))
-               (conj acc x))) '())   
-   reverse list
-   (.body pol)))
+  (->> pol
+     (#(nth % 0))
+     (reduce (fn [acc x]
+               (if (list? x)
+                 (->>
+                  (-> x
+                     (update-l 1 #(* % (get-n (nth x 2))))
+                     (update-l 2 #(update-l % 2 (fn [y] (dec y)))))
+                  (conj acc))
+                 (conj acc x))) '())
+     reverse list
+     (.body pol)))
 
