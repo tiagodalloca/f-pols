@@ -4,7 +4,7 @@
 (defn monomio [c e]
   (list '* c (list 'Math/pow 'x e)))
 
-(defn polinomio [c-es]
+(defn polinomio [& c-es]
   (funcao-maligna
    [:x]
    (list (conj
